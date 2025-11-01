@@ -58,10 +58,11 @@ dashboard/
 - ドラッグ&ドロップでもデプロイ可能
 - https://www.netlify.com
 
-**GitHub Pages**
+**GitHub Pages（現在使用中）**
 - GitHubリポジトリがあれば自動でホスティング
 - 無料でシンプル
 - `Settings` > `Pages` で有効化
+- 詳細な設定手順は `GITHUB_PAGES_SETUP.md` を参照
 
 **Firebase Hosting**
 - Googleのサービス
