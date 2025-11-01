@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="作成したWEBアプリケーションの総合案内ページ">
+    <meta name="theme-color" content="#FFBBDD">
     <title>WEBアプリ総合案内</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="アプリ案内">
     <style>
         * {
             margin: 0;
@@ -164,6 +170,72 @@
         .app-card:nth-child(2) {
             animation-delay: 0.2s;
         }
+
+        .add-to-home-notice {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .notice-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notice-content p {
+            margin: 0;
+            color: #6B4C93;
+            font-size: 0.9em;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.5em;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .add-to-home-notice {
+                bottom: 10px;
+                padding: 12px 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -195,8 +267,18 @@
             </div>
         </div>
 
+        <div class="add-to-home-notice" id="addToHomeNotice">
+            <div class="notice-content">
+                <p>📱 ホーム画面に追加すると、アプリのように使えます！</p>
+                <button onclick="document.getElementById('addToHomeNotice').style.display='none'" class="close-btn">×</button>
+            </div>
+        </div>
+
         <footer>
             <p>© 2025 WEBアプリ総合案内</p>
+            <p style="font-size: 0.8em; margin-top: 10px; opacity: 0.7;">
+                Android: メニュー → 「ホーム画面に追加」
+            </p>
         </footer>
     </div>
 </body>
