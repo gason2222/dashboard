@@ -19,24 +19,32 @@ dashboard/
 │   ├── image2diary.png
 │   └── recipe-from-fridge.png
 ├── update-history/          # 更新履歴JSONファイル
-│   └── history.json        # 更新履歴データ
+│   ├── history-image2diary.json        # Image2Diaryの更新履歴
+│   └── history-recipe-from-fridge.json # Recipe from Fridgeの更新履歴
 └── README.md              # このファイル
 ```
 
 ## 更新履歴の追加方法
 
-`update-history/history.json` ファイルを編集して更新履歴を追加できます。
+各アプリごとに個別の更新履歴ファイルを編集します。
+
+### ファイル構成
+
+各アプリごとに `update-history/history-{アプリID}.json` というファイルを作成・編集します。
+
+- `history-image2diary.json` - Image2Diaryの更新履歴
+- `history-recipe-from-fridge.json` - Recipe from Fridgeの更新履歴
 
 ### JSONファイルの形式
 
 ```json
 [
   {
-    "date": "2025-01-15",
+    "date": "2025-11-02",
     "update-history": "更新内容をここに記述"
   },
   {
-    "date": "2025-01-14",
+    "date": "2025-10-22",
     "update-history": "別の更新内容"
   }
 ]
@@ -44,15 +52,26 @@ dashboard/
 
 ### 追加手順
 
-1. `update-history/history.json` を開く
+1. 対応するアプリのJSONファイルを開く
+   - Image2Diary → `update-history/history-image2diary.json`
+   - Recipe from Fridge → `update-history/history-recipe-from-fridge.json`
 2. 配列の先頭に新しい更新履歴オブジェクトを追加
 3. 日付は `yyyy-mm-dd` 形式で記入
-4. 保存してコミット・プッシュ
+4. `update-history` に更新内容を記述
+5. 保存してコミット・プッシュ
+
+### 新しいアプリを追加する場合
+
+1. `update-history/history-{アプリID}.json` ファイルを作成
+2. 上記のJSON形式で更新履歴を記述
+3. HTMLのアプリカードに `data-app="{アプリID}"` 属性を設定
+4. ID属性を `latest-date-{アプリID}`, `latest-content-{アプリID}`, `history-list-{アプリID}` に設定
 
 **注意**: 
-- 最新の更新履歴が各アプリカードの「アプリを開く」ボタンの下に表示されます
+- 各アプリの最新の更新履歴が「アプリを開く」ボタンの下に表示されます
 - マウスホバー（またはタップ）で過去10件の履歴がモーダルで表示されます
 - 日付順に自動ソートされます（新しい順）
+- ファイルが存在しない、または読み込みエラーの場合、そのアプリの更新履歴エリアは非表示になります
 
 ## ホスティング方法
 

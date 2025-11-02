@@ -382,11 +382,11 @@
                 </a>
                 <div class="update-history-area" data-app="recipe-from-fridge">
                     <div class="latest-update">
-                        <div class="update-date" id="latest-date-recipe">読み込み中...</div>
-                        <div class="update-content" id="latest-content-recipe">更新履歴を読み込んでいます</div>
-                        <div class="history-modal" id="history-modal-recipe">
+                        <div class="update-date" id="latest-date-recipe-from-fridge">読み込み中...</div>
+                        <div class="update-content" id="latest-content-recipe-from-fridge">更新履歴を読み込んでいます</div>
+                        <div class="history-modal" id="history-modal-recipe-from-fridge">
                             <h3>更新履歴（過去10件）</h3>
-                            <div id="history-list-recipe"></div>
+                            <div id="history-list-recipe-from-fridge"></div>
                         </div>
                     </div>
                 </div>
@@ -409,10 +409,18 @@
     </div>
 
     <script>
-        // 更新履歴を読み込んで表示する関数
-        async function loadUpdateHistory() {
+        // 各アプリごとの更新履歴を読み込んで表示する関数
+        async function loadUpdateHistoryForApp(appId, historyArea) {
             try {
-                const response = await fetch('update-history/history.json');
+                // data-app属性からJSONファイル名を生成
+                // 例: "image2diary" → "history-image2diary.json"
+                const fileName = `history-${appId}.json`;
+                const response = await fetch(`update-history/${fileName}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${fileName}`);
+                }
+                
                 const historyData = await response.json();
                 
                 // 日付でソート（新しい順）
@@ -421,47 +429,66 @@
                 // 最新10件を取得
                 const recentHistory = sortedHistory.slice(0, 10);
                 
-                // 各アプリカードに更新履歴を表示
-                displayUpdateHistory('image2diary', recentHistory);
-                displayUpdateHistory('recipe-from-fridge', recentHistory);
+                // 更新履歴を表示
+                displayUpdateHistory(appId, recentHistory, historyArea);
                 
             } catch (error) {
-                console.error('更新履歴の読み込みに失敗しました:', error);
-                // エラー時は非表示にする
-                document.querySelectorAll('.update-history-area').forEach(area => {
-                    area.style.display = 'none';
-                });
+                console.warn(`${appId}の更新履歴の読み込みに失敗しました:`, error);
+                // エラー時はそのアプリの更新履歴エリアを非表示にする
+                historyArea.style.display = 'none';
             }
         }
         
-        function displayUpdateHistory(appId, history) {
+        // すべてのアプリの更新履歴を読み込む
+        async function loadAllUpdateHistories() {
+            const historyAreas = document.querySelectorAll('.update-history-area');
+            
+            // 各アプリごとに非同期で読み込む
+            const loadPromises = Array.from(historyAreas).map(area => {
+                const appId = area.getAttribute('data-app');
+                if (appId) {
+                    return loadUpdateHistoryForApp(appId, area);
+                }
+            });
+            
+            // すべての読み込みが完了するまで待つ
+            await Promise.all(loadPromises);
+        }
+        
+        function displayUpdateHistory(appId, history, historyArea) {
             if (history.length === 0) {
-                document.getElementById(`latest-date-${appId === 'image2diary' ? 'image2diary' : 'recipe'}`).parentElement.parentElement.style.display = 'none';
+                historyArea.style.display = 'none';
                 return;
             }
             
+            // IDの生成規則を統一（アプリIDから自動生成）
+            const dateId = `latest-date-${appId}`;
+            const contentId = `latest-content-${appId}`;
+            const listId = `history-list-${appId}`;
+            
             // 最新の更新履歴を表示
             const latest = history[0];
-            const dateId = appId === 'image2diary' ? 'latest-date-image2diary' : 'latest-date-recipe';
-            const contentId = appId === 'image2diary' ? 'latest-content-image2diary' : 'latest-content-recipe';
-            const listId = appId === 'image2diary' ? 'history-list-image2diary' : 'history-list-recipe';
+            const dateElement = document.getElementById(dateId);
+            const contentElement = document.getElementById(contentId);
+            const listElement = document.getElementById(listId);
             
-            document.getElementById(dateId).textContent = formatDate(latest.date);
-            document.getElementById(contentId).textContent = latest['update-history'];
-            
-            // モーダルに過去10件を表示
-            const historyList = document.getElementById(listId);
-            historyList.innerHTML = '';
-            
-            history.forEach((item, index) => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                historyItem.innerHTML = `
-                    <div class="history-item-date">${formatDate(item.date)}</div>
-                    <div class="history-item-content">${item['update-history']}</div>
-                `;
-                historyList.appendChild(historyItem);
-            });
+            if (dateElement && contentElement && listElement) {
+                dateElement.textContent = formatDate(latest.date);
+                contentElement.textContent = latest['update-history'];
+                
+                // モーダルに過去10件を表示
+                listElement.innerHTML = '';
+                
+                history.forEach((item) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <div class="history-item-date">${formatDate(item.date)}</div>
+                        <div class="history-item-content">${item['update-history']}</div>
+                    `;
+                    listElement.appendChild(historyItem);
+                });
+            }
         }
         
         function formatDate(dateString) {
@@ -474,7 +501,7 @@
         
         // モバイル対応：タップでモーダルを開閉
         document.addEventListener('DOMContentLoaded', () => {
-            loadUpdateHistory();
+            loadAllUpdateHistories();
             
             // タッチデバイス対応
             document.querySelectorAll('.latest-update').forEach(updateElement => {
