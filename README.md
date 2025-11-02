@@ -13,12 +13,46 @@
 
 ```
 dashboard/
-├── index.html          # メインのHTMLファイル
-├── images/             # 画像ファイルを配置するフォルダ
+├── index.html              # メインのHTMLファイル
+├── manifest.json           # PWA設定ファイル
+├── images/                 # 画像ファイルを配置するフォルダ
 │   ├── image2diary.png
 │   └── recipe-from-fridge.png
-└── README.md          # このファイル
+├── update-history/          # 更新履歴JSONファイル
+│   └── history.json        # 更新履歴データ
+└── README.md              # このファイル
 ```
+
+## 更新履歴の追加方法
+
+`update-history/history.json` ファイルを編集して更新履歴を追加できます。
+
+### JSONファイルの形式
+
+```json
+[
+  {
+    "date": "2025-01-15",
+    "update-history": "更新内容をここに記述"
+  },
+  {
+    "date": "2025-01-14",
+    "update-history": "別の更新内容"
+  }
+]
+```
+
+### 追加手順
+
+1. `update-history/history.json` を開く
+2. 配列の先頭に新しい更新履歴オブジェクトを追加
+3. 日付は `yyyy-mm-dd` 形式で記入
+4. 保存してコミット・プッシュ
+
+**注意**: 
+- 最新の更新履歴が各アプリカードの「アプリを開く」ボタンの下に表示されます
+- マウスホバー（またはタップ）で過去10件の履歴がモーダルで表示されます
+- 日付順に自動ソートされます（新しい順）
 
 ## ホスティング方法
 
